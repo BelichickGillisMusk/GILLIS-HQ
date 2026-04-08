@@ -21,6 +21,11 @@ export interface Agent {
   recentActivities: string[]
   assignedProjects: string[]
   skills: string[]
+  capacity: number
+  currentLoad: number
+  tokenCostPerTask: number
+  efficiency: number
+  specializations: string[]
 }
 
 export interface Department {

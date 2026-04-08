@@ -105,6 +105,12 @@ export function generateAgents(): Agent[] {
       const baseX = (deptIndex % 3) * 20 - 20
       const baseZ = Math.floor(deptIndex / 3) * 20 - 10
       
+      const skills = getDepartmentSkills(dept)
+      const capacity = 10
+      const currentLoad = Math.floor(Math.random() * 8)
+      const tokenCostPerTask = isClaude ? 150 + Math.random() * 100 : 80 + Math.random() * 60
+      const efficiency = 70 + Math.random() * 30
+      
       agents.push({
         id: `agent-${dept}-${i}`,
         name: `${name} #${i + 1}`,
@@ -123,7 +129,12 @@ export function generateAgents(): Agent[] {
           TASKS[dept][Math.floor(Math.random() * TASKS[dept].length)]
         ),
         assignedProjects: [],
-        skills: getDepartmentSkills(dept)
+        skills,
+        capacity,
+        currentLoad,
+        tokenCostPerTask: Math.round(tokenCostPerTask),
+        efficiency: Math.round(efficiency),
+        specializations: skills.slice(0, 2)
       })
     }
   })

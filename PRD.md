@@ -1,170 +1,192 @@
 # Planning Guide
 
-A virtual 3D office environment where AI agents (Claude and VM Open Claw) work across different departments, featuring interactive department zones with agent activities, real-time status updates, and a comprehensive project management system ("Lotion") integrated with AI-powered Board of Directors (Claude, Gemini, Grok, ChatGPT, Llama/Meta AI) and COO advice for optimizing project delivery.
+An intelligent AI office management system that teaches proper delegation, eliminates work duplication, and optimizes resource allocation through smart task routing, token cost tracking, and collaborative project management where AI agents work across departments with real-time coordination.
 
 **Experience Qualities**: 
-1. **Immersive** - Users should feel like they're exploring a real tech company headquarters with bustling activity, active projects, and strategic oversight
-2. **Dynamic** - Constant movement, status updates, and LLM-powered advice create a sense of living workspace where AI agents collaborate and projects evolve
-3. **Organized** - Clear visual separation between departments with intuitive navigation, color-coding, and a centralized project management dashboard
+1. **Educational** - Teaches users proper delegation principles, resource optimization, and project management best practices through interactive feedback
+2. **Efficient** - Actively prevents duplicate work, optimizes token costs per task type, and routes tasks to the most cost-effective agents
+3. **Cohesive** - All departments work together seamlessly with shared context, coordinated efforts, and transparent communication
 
 **Complexity Level**: Complex Application (advanced functionality, likely with multiple views)
-This requires 3D rendering with Three.js, multiple interactive zones, real-time agent status management, department-specific data, spatial navigation, LLM integration for board/COO advice, comprehensive project/task database with collaboration tracking, and persistent state management.
+This requires intelligent task routing, duplication detection, token cost tracking per agent/task type, cross-department collaboration systems, LLM integration with cost optimization, comprehensive project/task management with delegation workflows, and persistent state management.
 
 ## Essential Features
 
-### 3D Office Environment
-- **Functionality**: Renders an isometric or 3D top-down view of a large office space divided into 5 distinct department zones
-- **Purpose**: Creates an immersive, visually engaging way to see AI agent distribution and activities
-- **Trigger**: Automatically loads on app start
-- **Progression**: App loads → 3D scene initializes → Camera positions to overview → Departments render with distinct colors/layouts → Agents populate their zones
-- **Success criteria**: Smooth 60fps rendering, distinct visual zones, agents visible and identifiable
+### Smart Task Delegation System
+- **Functionality**: Intelligent routing of tasks to the most appropriate agent based on skills, workload, token cost efficiency, and specialization
+- **Purpose**: Teach users how to delegate properly by showing optimal agent selection and preventing over/under-utilization
+- **Trigger**: User creates a task or system auto-suggests delegation
+- **Progression**: Task created → System analyzes requirements → Suggests best agent based on cost/skill/availability → User approves or overrides → System explains reasoning → Task assigned with cost estimate
+- **Success criteria**: 90%+ accurate suggestions, clear cost comparisons shown, delegation explanations educational
 
-### Department Zones (Marketing, Sales, Admin, Tech, Operations)
-- **Functionality**: Each department has unique visual styling, multiple desks/workstations, and assigned agents
-- **Purpose**: Organize agents by function and create a realistic corporate structure
-- **Trigger**: Rendered as part of initial scene load
-- **Progression**: User views office → Departments are color-coded → Each zone shows desks and agents → User can identify department by visual cues
-- **Success criteria**: 5 distinct zones, clear boundaries, thematic styling per department
+### Duplication Detection & Prevention
+- **Functionality**: Scans existing tasks and projects to identify similar work, merges duplicates, and prevents redundant assignments
+- **Purpose**: Eliminate wasted resources by catching duplicate efforts before they happen
+- **Trigger**: Automatic when creating tasks/projects or manual scan
+- **Progression**: User creates task → System checks for similar tasks → Flags potential duplicates → Shows similarity score → User can merge, link, or proceed → System learns from decision
+- **Success criteria**: Detects 85%+ duplicates, suggests merges intelligently, tracks duplicate prevention savings
 
-### Agent Management System
-- **Functionality**: Display agent avatars, names, current status (working/idle/meeting), current task, skills, and assigned projects
-- **Purpose**: Show what each AI agent is doing in real-time and their capabilities
-- **Trigger**: Agents load with their department assignments
-- **Progression**: Agent appears in department → Shows avatar/icon → Displays name tag → Status indicator updates → Task description visible on hover/click → Skills and projects shown in detail panel
-- **Success criteria**: All agents visible, status updates every few seconds, smooth animations
+### Token Cost Tracking & Optimization
+- **Functionality**: Tracks token usage per agent type, task category, and department with cost breakdowns and optimization suggestions
+- **Purpose**: Show true operational costs and teach resource optimization through data
+- **Trigger**: Continuously tracks all LLM interactions
+- **Progression**: Agent works → Tokens consumed → Cost calculated → Aggregated by type/department → Dashboard shows costs → System suggests cheaper alternatives for repetitive tasks → User implements optimizations
+- **Success criteria**: Real-time cost tracking, clear visualizations, actionable optimization recommendations, ROI tracking
 
-### Lotion Project Management Dashboard
-- **Functionality**: Comprehensive project/task management interface showing all active projects across departments with metrics, budgets, timelines, and collaboration history
-- **Purpose**: Central hub for tracking project progress, accessing board advice, implementing COO recommendations, and managing resources
-- **Trigger**: Click "Lotion Projects" button in top-right corner
-- **Progression**: User clicks button → Panel slides up from bottom → Shows project list → User selects project → View project details with tabs for Board advice and COO recommendations → Request new advice → Implement suggestions → Track cost savings and efficiency gains
-- **Success criteria**: Slide-in animation smooth, all projects visible, detailed metrics displayed, advice generation works, implementation updates project state
+### Cross-Department Collaboration Hub
+- **Functionality**: Central workspace where agents from different departments collaborate on shared projects with visible handoffs and context preservation
+- **Purpose**: Show how departments should work together cohesively without information silos
+- **Trigger**: Projects requiring multiple departments or manual collaboration setup
+- **Progression**: Project spans departments → Collaboration hub created → Shared context visible to all → Handoffs tracked → Communication logged → Dependencies mapped → Team sees full picture
+- **Success criteria**: No lost context, clear handoff visualization, all departments see relevant info
 
-### Board of Directors AI Advice System
-- **Functionality**: Users can request strategic advice from any of 5 board members (Claude, Gemini, Grok, ChatGPT, Llama) using LLM integration
-- **Purpose**: Provide AI-powered strategic guidance on projects to help with decision-making, innovation, risk management, and competitive positioning
-- **Trigger**: User clicks "Request Advice" button in Lotion panel Board tab
-- **Progression**: User selects project → Clicks request advice → System prompts random board member's LLM → Advice appears in project → User can mark as implemented → Advice history tracked
-- **Success criteria**: LLM response within 5 seconds, advice contextual to project, implementation status tracked, multiple board members can provide input
+### Agent Capacity & Workload Management
+- **Functionality**: Visual dashboard showing each agent's current workload, capacity, efficiency rating, and token costs
+- **Purpose**: Teach load balancing and prevent agent burnout/underutilization
+- **Trigger**: Always visible in agent panels and department views
+- **Progression**: User views agents → Sees capacity bars and current assignments → Identifies overloaded/idle agents → System suggests rebalancing → User redistributes work → Efficiency improves
+- **Success criteria**: Real-time capacity updates, clear visualization, rebalancing suggestions work
 
-### COO Operational Advice System
-- **Functionality**: Request efficiency and cost-optimization recommendations from the COO with quantified savings and efficiency gains
-- **Purpose**: Help users optimize project delivery, reduce costs, improve team efficiency, and meet deadlines
-- **Trigger**: User clicks "Request Advice" button in Lotion panel COO tab
-- **Progression**: User viewing project → Clicks COO advice → System generates operational recommendation → Shows potential cost savings and efficiency gains → User implements → Project metrics update to reflect improvements
-- **Success criteria**: Cost savings calculated, efficiency gains shown, implementation updates actual cost and team efficiency metrics, recommendations actionable
+### Unified Project Dashboard (Lotion)
+- **Functionality**: Comprehensive view of all projects with dependency mapping, resource allocation, cost tracking, and delegation flows
+- **Purpose**: Central command center for understanding how all work interconnects and flows through the organization
+- **Trigger**: Click "Lotion Dashboard" button
+- **Progression**: User opens dashboard → Sees all projects with status → Views dependencies between projects → Checks resource allocation → Identifies bottlenecks → Makes adjustments → Tracks impact
+- **Success criteria**: Clear project relationships, easy navigation, actionable insights, delegation paths visible
 
-### Interactive Camera Controls
-- **Functionality**: Pan, zoom, and rotate camera to explore different office areas
-- **Purpose**: Allow users to navigate and focus on specific departments or agents
-- **Trigger**: Mouse drag, scroll, or on-screen controls
-- **Progression**: User clicks/drags → Camera smoothly moves → Focus shifts to selected area → Department detail becomes visible
-- **Success criteria**: Intuitive controls, smooth transitions, no clipping issues
+### Smart Task Routing & Assignment
+- **Functionality**: AI-powered suggestions for task assignment based on agent skills, current load, cost efficiency, and past performance
+- **Purpose**: Show users optimal delegation patterns and teach skill-task matching
+- **Trigger**: Creating or reassigning tasks
+- **Progression**: User has task → Clicks assign → System shows ranked agent recommendations with reasoning → Displays cost/efficiency tradeoffs → User selects → System explains why it's good/bad choice
+- **Success criteria**: Accurate rankings, clear reasoning, learns from user preferences
 
-### Agent Detail Panel
-- **Functionality**: Click on any agent to see detailed information (full task list, productivity metrics, recent activities, skills, assigned projects)
-- **Purpose**: Provide deeper insights into agent operations and capabilities
-- **Trigger**: User clicks on an agent avatar
-- **Progression**: User clicks agent → Panel slides in from side → Shows agent details including skills and projects → User can view tasks → Close button returns to overview
-- **Success criteria**: Smooth panel animation, comprehensive agent data with new fields, easy to close
+### Board of Directors Strategic Advice
+- **Functionality**: Request high-level strategic guidance from board members (Claude, Gemini, Grok, ChatGPT, Llama) with cost tracking
+- **Purpose**: Provide strategic oversight while teaching when to seek expert input vs handle internally
+- **Trigger**: User requests advice on project or strategic question
+- **Progression**: User selects board member → Enters question → System estimates token cost → User confirms → Board member responds → Advice logged → Implementation tracked → Cost/value analyzed
+- **Success criteria**: Quality advice, cost transparency, value tracking, usage patterns educate on ROI
 
-### Real-Time Collaboration Tracking
-- **Functionality**: Projects maintain collaboration logs showing agent interactions, task completion, and communication history
-- **Purpose**: Track how agents work together and contribute to project success
-- **Trigger**: Automated as agents work on projects
-- **Progression**: Agents assigned to projects → Work on tasks → Collaboration automatically logged → History visible in Lotion → Links and resources tracked
-- **Success criteria**: Collaboration entries created, timestamps accurate, accessible from project view
+### COO Operational Optimization
+- **Functionality**: Cost-focused recommendations for improving efficiency, reducing token spend, and optimizing workflows
+- **Purpose**: Teach operational excellence and cost management through specific, measurable improvements
+- **Trigger**: Automatic suggestions or manual request
+- **Progression**: System analyzes operations → Identifies inefficiencies → Generates cost-saving recommendations → Shows potential savings → User implements → System tracks actual savings → Reports ROI
+- **Success criteria**: Actionable recommendations, accurate savings predictions, proven ROI tracking
+
+### Delegation Education System
+- **Functionality**: Interactive tutorials and feedback when users make delegation decisions, explaining good vs poor choices
+- **Purpose**: Actively teach delegation best practices through real-time coaching
+- **Trigger**: User delegates tasks or makes resource decisions
+- **Progression**: User assigns task → System analyzes decision → Provides immediate feedback (good/bad/optimal) → Explains reasoning → Suggests improvements → Tracks user learning curve → Celebrates good decisions
+- **Success criteria**: Helpful feedback, non-intrusive, measurably improves delegation quality over time
+
+### Work Context Preservation
+- **Functionality**: All task/project context automatically preserved and shared with relevant team members
+- **Purpose**: Eliminate "what's the status?" questions and ensure everyone has the information they need
+- **Trigger**: Automatic as work progresses
+- **Progression**: Work happens → Context captured → Shared with relevant parties → Accessible from multiple views → Search and filter available → No information lost in transitions
+- **Success criteria**: Zero context loss, fast retrieval, intuitive access, reduces redundant communication
 
 ## Edge Case Handling
 
-- **No Agents Available**: Show empty desks with "Hiring" signs in departments
-- **No Projects**: Display onboarding message in Lotion to create first project
-- **LLM API Failure**: Show user-friendly error message, allow retry, fall back to template advice
-- **Performance on Low-End Devices**: Fallback to 2D isometric view if WebGL performance is poor
-- **Camera Out of Bounds**: Implement boundaries to keep camera within office space
-- **Rapid Agent Clicks**: Debounce click handlers to prevent UI conflicts
-- **Long Task/Project Names**: Truncate with ellipsis and show full text on hover
-- **Department Overcrowding**: Implement multi-row desk layouts for scalability
-- **Concurrent Advice Requests**: Disable request buttons while LLM is processing
-- **Budget Overruns**: Highlight projects in red when actual cost exceeds budget
-- **Project Without Assigned Agents**: Show warning indicator, suggest agent assignment
+- **No Agents Available**: Show hiring recommendations based on workload analysis
+- **Overloaded Agent**: Alert user and suggest redistribution with specific recommendations
+- **Duplicate Task Creation**: Block creation and show similar existing tasks
+- **LLM API Failure**: Show error, queue request for retry, offer template-based fallback
+- **Token Budget Exceeded**: Alert user, suggest cheaper alternatives, show cost breakdown
+- **Circular Dependencies**: Detect and prevent, visualize dependency chain, suggest fixes
+- **Unassigned High-Priority Task**: Alert user and show best agent matches
+- **Skill Gap**: Identify when no agent has required skills, suggest training or hiring
+- **Project Scope Creep**: Detect increasing task count/budget and alert user
+- **Cross-Department Blockers**: Identify and surface inter-department dependencies blocking progress
+- **Conflicting Assignments**: Prevent double-booking agents on simultaneous tasks
+- **Stale Projects**: Flag projects with no activity and suggest archiving or reactivation
+- **Cost Anomalies**: Alert when token costs spike unexpectedly
 
 ## Design Direction
 
-The design should evoke a futuristic, tech-forward workspace that feels alive and productive. Think cyberpunk office meets modern startup - energetic, organized, and distinctly digital with neon accents and holographic UI elements.
+The design should evoke a sophisticated command center for intelligent resource management - clean, data-rich, and confidence-inspiring. Think modern SaaS dashboard meets strategic war room - purposeful, efficient, and clearly showing the value of optimization.
 
 ## Color Selection
 
-A vibrant, department-specific color scheme with neon accents on a dark office environment.
+A professional, high-contrast color scheme emphasizing clarity and data visualization with strategic use of color to indicate status and priority.
 
-- **Primary Color**: Deep Space Blue (oklch(0.20 0.05 250)) - Main office floor and base structures, communicates professionalism and tech sophistication
+- **Primary Color**: Deep Indigo (oklch(0.25 0.08 270)) - Main interface foundation, communicates intelligence and strategic thinking
 - **Secondary Colors**: 
-  - Marketing: Energetic Pink (oklch(0.65 0.20 350)) - Creative and attention-grabbing
-  - Sales: Success Green (oklch(0.60 0.18 145)) - Growth and achievement oriented
-  - Admin: Reliable Purple (oklch(0.55 0.15 290)) - Organized and systematic
-  - Tech: Electric Cyan (oklch(0.70 0.18 200)) - Innovation and digital focus
-  - Operations: Industrial Orange (oklch(0.65 0.19 50)) - Productivity and efficiency
-- **Accent Color**: Neon Cyan (oklch(0.85 0.20 195)) - Holographic UI elements, active agent indicators, interactive highlights
+  - Success Green (oklch(0.65 0.18 145)) - Optimized tasks, cost savings, efficiency gains
+  - Warning Amber (oklch(0.70 0.15 50)) - Needs attention, potential duplicates, capacity warnings
+  - Critical Red (oklch(0.55 0.22 25)) - Overloaded agents, budget overruns, blockers
+  - Info Blue (oklch(0.60 0.12 240)) - Educational tips, delegation feedback, suggestions
+- **Accent Color**: Bright Cyan (oklch(0.75 0.15 195)) - Interactive elements, selected items, primary actions
 - **Foreground/Background Pairings**:
-  - Deep Space Blue (oklch(0.20 0.05 250)): White text (oklch(0.98 0 0)) - Ratio 12.3:1 ✓
-  - Marketing Pink (oklch(0.65 0.20 350)): White text (oklch(0.98 0 0)) - Ratio 5.8:1 ✓
-  - Sales Green (oklch(0.60 0.18 145)): White text (oklch(0.98 0 0)) - Ratio 4.9:1 ✓
-  - Admin Purple (oklch(0.55 0.15 290)): White text (oklch(0.98 0 0)) - Ratio 4.5:1 ✓
-  - Tech Cyan (oklch(0.70 0.18 200)): Dark text (oklch(0.15 0.02 250)) - Ratio 10.2:1 ✓
-  - Operations Orange (oklch(0.65 0.19 50)): Dark text (oklch(0.15 0.02 250)) - Ratio 8.1:1 ✓
+  - Deep Indigo (oklch(0.25 0.08 270)): White text (oklch(0.98 0 0)) - Ratio 11.2:1 ✓
+  - Success Green (oklch(0.65 0.18 145)): White text (oklch(0.98 0 0)) - Ratio 5.1:1 ✓
+  - Warning Amber (oklch(0.70 0.15 50)): Dark text (oklch(0.20 0.05 270)) - Ratio 8.7:1 ✓
+  - Critical Red (oklch(0.55 0.22 25)): White text (oklch(0.98 0 0)) - Ratio 4.6:1 ✓
+  - Info Blue (oklch(0.60 0.12 240)): White text (oklch(0.98 0 0)) - Ratio 5.0:1 ✓
+  - Bright Cyan (oklch(0.75 0.15 195)): Dark text (oklch(0.20 0.05 270)) - Ratio 10.5:1 ✓
 
 ## Font Selection
 
-Sharp, geometric typefaces that convey technical precision and futuristic corporate identity.
+Clean, highly readable typefaces that emphasize clarity and professionalism while maintaining personality for data-heavy interfaces.
 
 - **Typographic Hierarchy**: 
-  - H1 (Office Title): Space Grotesk Bold/36px/tight letter spacing (-0.02em)
-  - H2 (Department Names): Space Grotesk Bold/24px/normal spacing
-  - H3 (Agent Names): Space Grotesk Medium/16px/normal spacing
-  - Body (Status/Tasks): JetBrains Mono Regular/14px/relaxed line height (1.6)
-  - Small (Metadata): JetBrains Mono Regular/12px/normal spacing
+  - H1 (Dashboard Title): Inter Bold/32px/tight letter spacing (-0.01em)
+  - H2 (Section Headers): Inter Semi-Bold/24px/normal spacing
+  - H3 (Card Titles): Inter Medium/18px/normal spacing
+  - Body (Content): Inter Regular/14px/relaxed line height (1.6)
+  - Data (Metrics/Costs): IBM Plex Mono Medium/14px/tabular numbers
+  - Small (Labels): Inter Regular/12px/slightly increased letter spacing (0.01em)
 
 ## Animations
 
-Animations should create a sense of bustling office activity - agents moving between states, status indicators pulsing, subtle idle movements. Camera transitions should be smooth and physics-based with easing. Agent status changes should have a quick fade transition (200ms). Hovering over agents should trigger a gentle scale-up (1.05x) with a 150ms ease-out. The detail panel should slide in from the right with a 300ms cubic-bezier ease.
+Animations should feel responsive and purposeful - reinforcing actions and providing clear feedback without unnecessary decoration. State transitions (200ms ease), loading states with skeleton screens, success confirmations with subtle scale pulse (150ms), cost savings with satisfying counter animations (500ms), delegation feedback with gentle highlighting (300ms).
 
 ## Component Selection
 
 - **Components**: 
-  - Card for agent detail panel and department info cards
-  - Badge for agent status indicators (Working/Idle/Meeting)
-  - Tooltip for quick agent info on hover
-  - Tabs for switching between floor views if expanding later
-  - ScrollArea for task lists in agent detail panel
-  - Button for camera controls and panel close actions
-  - Separator for dividing panel sections
+  - Card for agent panels, project cards, and metric displays
+  - Badge for status indicators, priority levels, and cost tiers
+  - Table for task lists and resource allocations
+  - Progress bars for capacity, budget utilization, and completion
+  - Tabs for switching between views (Projects, Agents, Analytics)
+  - Dialog for delegation decisions and confirmation modals
+  - Tooltip for educational hints and detailed explanations
+  - Alert for warnings about duplicates, overloads, and optimizations
+  - Sheet for side panels with detailed information
+  - Select for agent assignment and filtering
+  - Command palette for quick actions
 - **Customizations**: 
-  - Custom Three.js canvas component for 3D office rendering
-  - Custom agent avatar components with animated status rings
-  - Custom department zone overlays with glassmorphic styling
-  - Custom camera control widget with direction buttons
+  - Agent capacity meters with color-coded zones (green/yellow/red)
+  - Cost comparison cards showing token efficiency
+  - Duplication similarity indicators with merge UI
+  - Delegation confidence scores with reasoning tooltips
+  - Interactive dependency graph visualization
 - **States**: 
-  - Buttons: Default with subtle glow, hover with increased glow and 1.05 scale, active with pressed appearance
-  - Agent avatars: Idle (subtle pulse), working (rotating ring), meeting (group indicator)
-  - Department zones: Default with semi-transparent overlay, hover with increased opacity and border glow
+  - Buttons: Clear hierarchy (primary/secondary/ghost), disabled for processing, success state with checkmark
+  - Agent cards: Available (green border), busy (amber pulse), overloaded (red glow)
+  - Tasks: Todo (neutral), in-progress (blue accent), duplicate warning (amber), completed (green check)
+  - Projects: On-track (green indicator), at-risk (amber), blocked (red)
 - **Icon Selection**: 
-  - Briefcase for Sales
-  - ChartLine for Marketing  
-  - Gear for Operations
-  - Code for Tech
-  - ClipboardText for Admin
-  - User/UserCircle for agents
-  - Eye for view controls
-  - X for close actions
-  - ArrowsOut for zoom controls
+  - Users/UsersThree for team and collaboration
+  - ChartBar/TrendUp for metrics and optimization
+  - Warning/WarningCircle for alerts
+  - CheckCircle for completions
+  - CurrencyDollar for costs
+  - Brain for AI insights
+  - GitBranch for dependencies
+  - Copy for duplicates
+  - Timer for capacity
 - **Spacing**: 
-  - Office grid: 8-unit (32px) spacing between desks
-  - Panel padding: p-6 (24px)
-  - Card gaps: gap-4 (16px) for content sections
-  - Agent spacing: gap-2 (8px) between status elements
+  - Dashboard grid: gap-6 (24px) between major sections
+  - Card padding: p-6 (24px) for content
+  - List items: gap-3 (12px) between items
+  - Metrics: gap-4 (16px) between stat groups
 - **Mobile**: 
-  - Switch to 2D top-down view on mobile
-  - Touch controls for pan/zoom (pinch to zoom, drag to pan)
-  - Bottom sheet instead of side panel for agent details
-  - Simplified department layout with vertical scrolling
-  - Larger tap targets (min 44px) for agents
+  - Single column layout with priority-based ordering
+  - Bottom sheet for quick actions
+  - Swipe gestures for agent assignment
+  - Simplified metrics (show top 3)
+  - Collapsible sections for detailed data
