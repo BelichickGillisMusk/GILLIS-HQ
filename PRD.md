@@ -40,6 +40,13 @@ This requires intelligent task routing, duplication detection, token cost tracki
 - **Progression**: Project spans departments → Collaboration hub created → Shared context visible to all → Handoffs tracked → Communication logged → Dependencies mapped → Team sees full picture
 - **Success criteria**: No lost context, clear handoff visualization, all departments see relevant info
 
+### Agent Chat System
+- **Functionality**: Real-time conversational interface where users can discuss projects with AI agents, request strategic advice from board members, and get operational recommendations from the COO
+- **Purpose**: Enable natural communication between managers and AI agents for collaborative problem-solving and decision-making
+- **Trigger**: User navigates to Agent Chat tab or wants to discuss specific projects
+- **Progression**: User selects project → Opens chat → Sends message to agent → Agent generates contextual response → User requests Board/COO advice → Strategic guidance provided → All conversations preserved
+- **Success criteria**: Natural conversations, relevant agent responses, useful board/COO advice, persistent chat history
+
 ### Agent Capacity & Workload Management
 - **Functionality**: Visual dashboard showing each agent's current workload, capacity, efficiency rating, and token costs
 - **Purpose**: Teach load balancing and prevent agent burnout/underutilization

@@ -10,6 +10,7 @@ import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Progress } from '@/components/ui/progress'
+import { AgentChat } from '@/components/AgentChat'
 import { 
   Users, 
   ChartBar, 
@@ -18,7 +19,8 @@ import {
   WarningCircle,
   Brain,
   TrendUp,
-  ListChecks
+  ListChecks,
+  ChatCircleText
 } from '@phosphor-icons/react'
 
 function App() {
@@ -27,6 +29,7 @@ function App() {
   const [tasks] = useKV<Task[]>('office-tasks', [])
   const [duplicatesPrevented] = useKV<number>('duplicates-prevented', 0)
   const [totalTokensSaved] = useKV<number>('total-tokens-saved', 0)
+  const [selectedProject, setSelectedProject] = useState<string | undefined>()
 
   useEffect(() => {
     if (!agents || agents.length === 0) {
@@ -134,6 +137,7 @@ function App() {
           <TabsList className="bg-card border border-border">
             <TabsTrigger value="agents">Agents</TabsTrigger>
             <TabsTrigger value="projects">Projects</TabsTrigger>
+            <TabsTrigger value="chat">Agent Chat</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
           </TabsList>
 
@@ -191,7 +195,11 @@ function App() {
                 else if (budgetUtilization >= 80) budgetStatus = 'text-warning'
 
                 return (
-                  <Card key={project.id} className="p-6 bg-card border-border hover:border-accent transition-colors">
+                  <Card 
+                    key={project.id} 
+                    className={`p-6 bg-card border-border hover:border-accent transition-colors cursor-pointer ${selectedProject === project.id ? 'ring-2 ring-accent' : ''}`}
+                    onClick={() => setSelectedProject(project.id)}
+                  >
                     <div className="space-y-4">
                       <div className="flex items-start justify-between">
                         <div>
@@ -233,6 +241,15 @@ function App() {
                 )
               })}
             </div>
+          </TabsContent>
+
+          <TabsContent value="chat" className="space-y-4">
+            <AgentChat 
+              agents={agents || []}
+              projects={projects || []}
+              tasks={tasks || []}
+              selectedProject={selectedProject}
+            />
           </TabsContent>
 
           <TabsContent value="analytics" className="space-y-6">
