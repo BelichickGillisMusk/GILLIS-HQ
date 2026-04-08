@@ -1,22 +1,34 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useKV } from '@github/spark/hooks'
-import { Agent } from '@/lib/types'
+import { Agent, Project } from '@/lib/types'
 import { generateAgents, getDepartments } from '@/lib/officeData'
+import { generateInitialProjects } from '@/lib/projectData'
 import { OfficeScene } from '@/components/OfficeScene'
 import { AgentDetailPanel } from '@/components/AgentDetailPanel'
 import { DepartmentLegend } from '@/components/DepartmentLegend'
 import { OfficeStats } from '@/components/OfficeStats'
+import { LotionPanel } from '@/components/LotionPanel'
 import { Toaster } from '@/components/ui/sonner'
+import { Button } from '@/components/ui/button'
+import { ListChecks } from '@phosphor-icons/react'
 
 function App() {
   const [agents, setAgents] = useKV<Agent[]>('office-agents', [])
+  const [projects, setProjects] = useKV<Project[]>('office-projects', [])
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null)
+  const [showLotion, setShowLotion] = useState(false)
 
   useEffect(() => {
     if (!agents || agents.length === 0) {
       setAgents(generateAgents())
     }
   }, [agents, setAgents])
+
+  useEffect(() => {
+    if (!projects || projects.length === 0) {
+      setProjects(generateInitialProjects(['marketing', 'sales', 'admin', 'tech', 'operations']))
+    }
+  }, [projects, setProjects])
 
   const departments = useMemo(() => {
     return getDepartments(agents || [])
@@ -116,6 +128,17 @@ function App() {
         </p>
       </div>
 
+      <div className="absolute top-4 right-4 z-20">
+        <Button 
+          onClick={() => setShowLotion(!showLotion)}
+          className="gap-2"
+          variant={showLotion ? 'default' : 'secondary'}
+        >
+          <ListChecks size={20} weight="duotone" />
+          Lotion Projects
+        </Button>
+      </div>
+
       <DepartmentLegend departments={departments} />
 
       <OfficeStats agents={agents || []} />
@@ -131,6 +154,14 @@ function App() {
         agent={selectedAgent}
         onClose={() => setSelectedAgent(null)}
       />
+
+      {showLotion && (
+        <LotionPanel
+          projects={projects || []}
+          onClose={() => setShowLotion(false)}
+          onUpdate={setProjects}
+        />
+      )}
 
       <Toaster />
     </div>

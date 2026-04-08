@@ -71,6 +71,17 @@ const VM_NAMES = [
   'VM Echo', 'VM Nova', 'VM Pulse', 'VM Zen'
 ]
 
+function getDepartmentSkills(dept: DepartmentType): string[] {
+  const skillSets: Record<DepartmentType, string[]> = {
+    marketing: ['Content Creation', 'SEO', 'Analytics', 'Social Media', 'Brand Strategy', 'Campaign Management'],
+    sales: ['Lead Generation', 'CRM', 'Negotiation', 'Product Knowledge', 'Pipeline Management', 'Client Relations'],
+    admin: ['Scheduling', 'Documentation', 'Process Management', 'Communication', 'Organization', 'Vendor Management'],
+    tech: ['Programming', 'Architecture', 'DevOps', 'Testing', 'Security', 'Code Review', 'System Design'],
+    operations: ['Logistics', 'Process Optimization', 'Quality Control', 'Resource Planning', 'Vendor Coordination', 'Metrics Analysis']
+  }
+  return skillSets[dept].slice(0, 3 + Math.floor(Math.random() * 3))
+}
+
 export function generateAgents(): Agent[] {
   const agents: Agent[] = []
   const departments: DepartmentType[] = ['marketing', 'sales', 'admin', 'tech', 'operations']
@@ -110,7 +121,9 @@ export function generateAgents(): Agent[] {
         tasksCompleted: Math.floor(Math.random() * 50),
         recentActivities: Array(5).fill(null).map(() => 
           TASKS[dept][Math.floor(Math.random() * TASKS[dept].length)]
-        )
+        ),
+        assignedProjects: [],
+        skills: getDepartmentSkills(dept)
       })
     }
   })

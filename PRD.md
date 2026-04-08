@@ -1,14 +1,14 @@
 # Planning Guide
 
-A virtual 3D office environment where AI agents (Claude and VM Open Claw) work across different departments, featuring interactive department zones with agent activities and real-time status updates.
+A virtual 3D office environment where AI agents (Claude and VM Open Claw) work across different departments, featuring interactive department zones with agent activities, real-time status updates, and a comprehensive project management system ("Lotion") integrated with AI-powered Board of Directors (Claude, Gemini, Grok, ChatGPT, Llama/Meta AI) and COO advice for optimizing project delivery.
 
 **Experience Qualities**: 
-1. **Immersive** - Users should feel like they're exploring a real tech company headquarters with bustling activity
-2. **Dynamic** - Constant movement and status updates create a sense of living workspace with AI agents actively working
-3. **Organized** - Clear visual separation between departments with intuitive navigation and color-coding
+1. **Immersive** - Users should feel like they're exploring a real tech company headquarters with bustling activity, active projects, and strategic oversight
+2. **Dynamic** - Constant movement, status updates, and LLM-powered advice create a sense of living workspace where AI agents collaborate and projects evolve
+3. **Organized** - Clear visual separation between departments with intuitive navigation, color-coding, and a centralized project management dashboard
 
 **Complexity Level**: Complex Application (advanced functionality, likely with multiple views)
-This requires 3D rendering with Three.js, multiple interactive zones, real-time agent status management, department-specific data, and a sophisticated spatial navigation system.
+This requires 3D rendering with Three.js, multiple interactive zones, real-time agent status management, department-specific data, spatial navigation, LLM integration for board/COO advice, comprehensive project/task database with collaboration tracking, and persistent state management.
 
 ## Essential Features
 
@@ -27,11 +27,32 @@ This requires 3D rendering with Three.js, multiple interactive zones, real-time 
 - **Success criteria**: 5 distinct zones, clear boundaries, thematic styling per department
 
 ### Agent Management System
-- **Functionality**: Display agent avatars, names, current status (working/idle/meeting), and current task
-- **Purpose**: Show what each AI agent is doing in real-time
+- **Functionality**: Display agent avatars, names, current status (working/idle/meeting), current task, skills, and assigned projects
+- **Purpose**: Show what each AI agent is doing in real-time and their capabilities
 - **Trigger**: Agents load with their department assignments
-- **Progression**: Agent appears in department → Shows avatar/icon → Displays name tag → Status indicator updates → Task description visible on hover/click
+- **Progression**: Agent appears in department → Shows avatar/icon → Displays name tag → Status indicator updates → Task description visible on hover/click → Skills and projects shown in detail panel
 - **Success criteria**: All agents visible, status updates every few seconds, smooth animations
+
+### Lotion Project Management Dashboard
+- **Functionality**: Comprehensive project/task management interface showing all active projects across departments with metrics, budgets, timelines, and collaboration history
+- **Purpose**: Central hub for tracking project progress, accessing board advice, implementing COO recommendations, and managing resources
+- **Trigger**: Click "Lotion Projects" button in top-right corner
+- **Progression**: User clicks button → Panel slides up from bottom → Shows project list → User selects project → View project details with tabs for Board advice and COO recommendations → Request new advice → Implement suggestions → Track cost savings and efficiency gains
+- **Success criteria**: Slide-in animation smooth, all projects visible, detailed metrics displayed, advice generation works, implementation updates project state
+
+### Board of Directors AI Advice System
+- **Functionality**: Users can request strategic advice from any of 5 board members (Claude, Gemini, Grok, ChatGPT, Llama) using LLM integration
+- **Purpose**: Provide AI-powered strategic guidance on projects to help with decision-making, innovation, risk management, and competitive positioning
+- **Trigger**: User clicks "Request Advice" button in Lotion panel Board tab
+- **Progression**: User selects project → Clicks request advice → System prompts random board member's LLM → Advice appears in project → User can mark as implemented → Advice history tracked
+- **Success criteria**: LLM response within 5 seconds, advice contextual to project, implementation status tracked, multiple board members can provide input
+
+### COO Operational Advice System
+- **Functionality**: Request efficiency and cost-optimization recommendations from the COO with quantified savings and efficiency gains
+- **Purpose**: Help users optimize project delivery, reduce costs, improve team efficiency, and meet deadlines
+- **Trigger**: User clicks "Request Advice" button in Lotion panel COO tab
+- **Progression**: User viewing project → Clicks COO advice → System generates operational recommendation → Shows potential cost savings and efficiency gains → User implements → Project metrics update to reflect improvements
+- **Success criteria**: Cost savings calculated, efficiency gains shown, implementation updates actual cost and team efficiency metrics, recommendations actionable
 
 ### Interactive Camera Controls
 - **Functionality**: Pan, zoom, and rotate camera to explore different office areas
@@ -41,20 +62,32 @@ This requires 3D rendering with Three.js, multiple interactive zones, real-time 
 - **Success criteria**: Intuitive controls, smooth transitions, no clipping issues
 
 ### Agent Detail Panel
-- **Functionality**: Click on any agent to see detailed information (full task list, productivity metrics, recent activities)
-- **Purpose**: Provide deeper insights into agent operations
+- **Functionality**: Click on any agent to see detailed information (full task list, productivity metrics, recent activities, skills, assigned projects)
+- **Purpose**: Provide deeper insights into agent operations and capabilities
 - **Trigger**: User clicks on an agent avatar
-- **Progression**: User clicks agent → Panel slides in from side → Shows agent details → User can view tasks → Close button returns to overview
-- **Success criteria**: Smooth panel animation, comprehensive agent data, easy to close
+- **Progression**: User clicks agent → Panel slides in from side → Shows agent details including skills and projects → User can view tasks → Close button returns to overview
+- **Success criteria**: Smooth panel animation, comprehensive agent data with new fields, easy to close
+
+### Real-Time Collaboration Tracking
+- **Functionality**: Projects maintain collaboration logs showing agent interactions, task completion, and communication history
+- **Purpose**: Track how agents work together and contribute to project success
+- **Trigger**: Automated as agents work on projects
+- **Progression**: Agents assigned to projects → Work on tasks → Collaboration automatically logged → History visible in Lotion → Links and resources tracked
+- **Success criteria**: Collaboration entries created, timestamps accurate, accessible from project view
 
 ## Edge Case Handling
 
 - **No Agents Available**: Show empty desks with "Hiring" signs in departments
+- **No Projects**: Display onboarding message in Lotion to create first project
+- **LLM API Failure**: Show user-friendly error message, allow retry, fall back to template advice
 - **Performance on Low-End Devices**: Fallback to 2D isometric view if WebGL performance is poor
 - **Camera Out of Bounds**: Implement boundaries to keep camera within office space
 - **Rapid Agent Clicks**: Debounce click handlers to prevent UI conflicts
-- **Long Task Names**: Truncate with ellipsis and show full text on hover
+- **Long Task/Project Names**: Truncate with ellipsis and show full text on hover
 - **Department Overcrowding**: Implement multi-row desk layouts for scalability
+- **Concurrent Advice Requests**: Disable request buttons while LLM is processing
+- **Budget Overruns**: Highlight projects in red when actual cost exceeds budget
+- **Project Without Assigned Agents**: Show warning indicator, suggest agent assignment
 
 ## Design Direction
 
