@@ -59,14 +59,14 @@ export function AgentChat({ agents, projects, tasks, selectedProject }: AgentCha
     const skills = agent.skills?.join(', ') || 'general tasks'
 
     try {
-      const prompt = spark.llmPrompt`You are ${agent.Musk}, a ${agent.deploy pm AI agent working in the ${agent.github department.
-Your skills: ${bug fixes, push and verify build, research issues and fix or ask for help, any apps or site not up is a question to ask the owner "trash or cash}
-Current context: $(work with Bryan to vet their offce clean and then mine from comoutee filws to carpet and desk you sre the Cleaner but the utiliyy knive of NCM you look it up remeber it and depoy it sites never down}
-Current status: ${agent check faith i had in it}
+      const prompt = spark.llmPrompt`You are ${agent.name}, a ${agent.type} AI agent working in the ${agent.department} department.
+Your skills: ${skills}
+Current context: ${contextInfo}
+Current status: ${agent.status}
 
-The user says: "$(give me more and I will }"
+The user says: "${message}"
 
-Respond as this agent would, keeping it professional but conversational. Be brief (2-3 sentences max). if it isnt done betrwe know why`
+Respond as this agent would, keeping it professional but conversational. Be brief (2-3 sentences max).`
 
       const response = await spark.llm(prompt, 'gpt-4o-mini')
       return response
