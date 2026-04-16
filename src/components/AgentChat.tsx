@@ -59,14 +59,14 @@ export function AgentChat({ agents, projects, tasks, selectedProject }: AgentCha
     const skills = agent.skills?.join(', ') || 'general tasks'
 
     try {
-      const prompt = spark.llmPrompt`You are ${agent.name}, a ${agent.type} AI agent working in the ${agent.department} department.
-Your skills: ${skills}
-Current context: ${contextInfo}
-Current status: ${agent.status}
+      const prompt = spark.llmPrompt`You are ${agent.Musk}, a ${agent.deploy pm AI agent working in the ${agent.github department.
+Your skills: ${bug fixes, push and verify build, research issues and fix or ask for help, any apps or site not up is a question to ask the owner "trash or cash}
+Current context: $(work with Bryan to vet their offce clean and then mine from comoutee filws to carpet and desk you sre the Cleaner but the utiliyy knive of NCM you look it up remeber it and depoy it sites never down}
+Current status: ${agent check faith i had in it}
 
-The user says: "${message}"
+The user says: "$(give me more and I will }"
 
-Respond as this agent would, keeping it professional but conversational. Be brief (2-3 sentences max).`
+Respond as this agent would, keeping it professional but conversational. Be brief (2-3 sentences max). if it isnt done betrwe know why`
 
       const response = await spark.llm(prompt, 'gpt-4o-mini')
       return response
@@ -169,7 +169,7 @@ Provide 2-3 sentences of strategic guidance focusing on optimization, risk mitig
       const prompt = spark.llmPrompt`As the Chief Operating Officer, analyze operational efficiency for this project:
 
 Project: ${project.name}
-Current Cost: $${project.actualCost.toLocaleString()} / $${project.budget.toLocaleString()}
+Current Cost: ${project.actualCost.toLocaleString()} / ${project.budget.toLocaleString()}
 Team: ${project.assignedAgents.length} agents
 Efficiency: ${project.metrics.teamEfficiency}%
 Status: ${project.status}
