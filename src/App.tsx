@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useKV } from '@github/spark/hooks'
 import { Agent, Project, Task } from '@/lib/types'
+import { Team } from '@/lib/teamFormation'
 import { generateAgents } from '@/lib/officeData'
 import { generateInitialProjects } from '@/lib/projectData'
 import { analyzeTokenCosts } from '@/lib/tokenCosts'
@@ -11,6 +12,9 @@ import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Progress } from '@/components/ui/progress'
 import { AgentChat } from '@/components/AgentChat'
+import { TeamManagement } from '@/components/TeamManagement'
+import { HRDashboard } from '@/components/HRDashboard'
+import { DeploymentChecklist } from '@/components/DeploymentChecklist'
 import { 
   Users, 
   ChartBar, 
@@ -20,13 +24,17 @@ import {
   Brain,
   TrendUp,
   ListChecks,
-  ChatCircleText
+  ChatCircleText,
+  UsersThree,
+  Rocket,
+  UserCircle
 } from '@phosphor-icons/react'
 
 function App() {
   const [agents, setAgents] = useKV<Agent[]>('office-agents', [])
   const [projects, setProjects] = useKV<Project[]>('office-projects', [])
   const [tasks] = useKV<Task[]>('office-tasks', [])
+  const [teams, setTeams] = useKV<Team[]>('office-teams', [])
   const [duplicatesPrevented] = useKV<number>('duplicates-prevented', 0)
   const [totalTokensSaved] = useKV<number>('total-tokens-saved', 0)
   const [selectedProject, setSelectedProject] = useState<string | undefined>()
@@ -42,6 +50,16 @@ function App() {
       setProjects(generateInitialProjects(['marketing', 'sales', 'admin', 'tech', 'operations']))
     }
   }, [projects, setProjects])
+
+  const handleTeamUpdate = (team: Team) => {
+    setTeams((currentTeams) => {
+      const existing = currentTeams?.find(t => t.id === team.id)
+      if (existing) {
+        return (currentTeams || []).map(t => t.id === team.id ? team : t)
+      }
+      return [...(currentTeams || []), team]
+    })
+  }
 
   const analytics = analyzeTokenCosts(agents || [], tasks || [])
   
@@ -134,11 +152,14 @@ function App() {
         )}
 
         <Tabs defaultValue="agents" className="w-full">
-          <TabsList className="bg-card border border-border">
-            <TabsTrigger value="agents">Agents</TabsTrigger>
-            <TabsTrigger value="projects">Projects</TabsTrigger>
-            <TabsTrigger value="chat">Agent Chat</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsList className="bg-card border border-border grid grid-cols-3 md:grid-cols-7 gap-1">
+            <TabsTrigger value="agents" className="gap-1"><Users size={16} />Agents</TabsTrigger>
+            <TabsTrigger value="projects" className="gap-1"><ListChecks size={16} />Projects</TabsTrigger>
+            <TabsTrigger value="teams" className="gap-1"><UsersThree size={16} />Teams</TabsTrigger>
+            <TabsTrigger value="hr" className="gap-1"><UserCircle size={16} />HR</TabsTrigger>
+            <TabsTrigger value="chat" className="gap-1"><ChatCircleText size={16} />Chat</TabsTrigger>
+            <TabsTrigger value="deploy" className="gap-1"><Rocket size={16} />Deploy</TabsTrigger>
+            <TabsTrigger value="analytics" className="gap-1"><ChartBar size={16} />Analytics</TabsTrigger>
           </TabsList>
 
           <TabsContent value="agents" className="space-y-4">
@@ -243,12 +264,36 @@ function App() {
             </div>
           </TabsContent>
 
+          <TabsContent value="teams" className="space-y-4">
+            <TeamManagement 
+              agents={agents || []}
+              projects={projects || []}
+              tasks={tasks || []}
+              onTeamUpdate={handleTeamUpdate}
+            />
+          </TabsContent>
+
+          <TabsContent value="hr" className="space-y-4">
+            <HRDashboard 
+              agents={agents || []}
+              projects={projects || []}
+              tasks={tasks || []}
+            />
+          </TabsContent>
+
           <TabsContent value="chat" className="space-y-4">
             <AgentChat 
               agents={agents || []}
               projects={projects || []}
               tasks={tasks || []}
               selectedProject={selectedProject}
+            />
+          </TabsContent>
+
+          <TabsContent value="deploy" className="space-y-4">
+            <DeploymentChecklist 
+              projects={projects || []}
+              teams={teams || []}
             />
           </TabsContent>
 
