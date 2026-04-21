@@ -1,29 +1,24 @@
 import { useState, useRef, useEffect } from 'react'
 import { useKV } from '@github/spark/hooks'
 import { Toaster } from '@/components/ui/sonner'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Progress } from '@/components/ui/progress'
-import { AgentChat } from '@/components/AgentChat'
-import { HRDashboard } from '@/components/HRDashboard'
-import { DeploymentChecklist } from '@/components/DeploymentChecklist'
-import { TeamManagement } from '@/components/TeamManagement'
-import { 
-  Users, 
-  ChartBar, 
-  CurrencyDollar, 
-  WarningCircle,
-  Brain,
-  TrendUp,
-  ListChecks,
-  ChatCircleText,
-  UsersThree,
-  Rocket,
-  UserCircle,
-  CheckCircle
-} from '@phosphor-icons/react'
+
+interface Message {
+  id: string
+  role: 'user' | 'assistant'
+  content: string
+  timestamp: number
+}
+
+const CORAL = '#FF6B6B'
+const BG = 'linear-gradient(135deg, #fef5f0 0%, #fff9f5 100%)'
+
+const SYSTEM = `You are Samantha, a highly capable AI assistant. You are helpful, warm, and direct.`
+
+const QUICK_ACTIONS = [
+  { emoji: '📊', label: 'Show me the dashboard' },
+  { emoji: '✅', label: 'What needs to be done?' },
+  { emoji: '👥', label: 'Team status' },
+]
 
 function App() {
   const [messages, setMessages] = useKV<Message[]>('samantha-messages', [])
@@ -79,8 +74,7 @@ function App() {
       content: text,
       timestamp: Date.now(),
     }
-    const updatedMessages = [...(messages || []), userMsg]
-    setMessages(updatedMessages)
+    setMessages((prev) => [...(prev || []), userMsg])
     setInput('')
 
     if (textareaRef.current) {
@@ -89,9 +83,16 @@ function App() {
 
     setIsLoading(true)
     try {
-      const history = updatedMessages
+      const currentMessages = await new Promise<Message[]>((resolve) => {
+        setMessages((prev) => {
+          resolve(prev || [])
+          return prev
+        })
+      })
+
+      const history = currentMessages
         .slice(-20)
-        .map(m => `${m.role === 'user' ? 'Bryan' : 'Samantha'}: ${m.content}`)
+        .map(m => `${m.role === 'user' ? 'User' : 'Samantha'}: ${m.content}`)
         .join('\n\n')
 
       const prompt = spark.llmPrompt`${SYSTEM}
@@ -149,7 +150,6 @@ Respond as Samantha (do not include the "Samantha:" prefix in your reply):`
         color: '#2D2D2D',
       }}
     >
-      {/* Header */}
       <header
         style={{
           background: '#fff',
@@ -182,7 +182,7 @@ Respond as Samantha (do not include the "Samantha:" prefix in your reply):`
           </div>
           <div>
             <div style={{ fontWeight: 700, fontSize: 16, letterSpacing: '-0.3px' }}>Samantha</div>
-            <div style={{ fontSize: 11, color: '#8B8B8B' }}>Your command center</div>
+            <div style={{ fontSize: 11, color: '#8B8B8B' }}>Your AI assistant</div>
           </div>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
@@ -223,7 +223,6 @@ Respond as Samantha (do not include the "Samantha:" prefix in your reply):`
         </div>
       </header>
 
-      {/* Messages */}
       <div
         ref={scrollRef}
         style={{
@@ -254,10 +253,10 @@ Respond as Samantha (do not include the "Samantha:" prefix in your reply):`
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 48, marginBottom: 8, color: CORAL }}>✦</div>
               <div style={{ fontSize: 22, fontWeight: 700, letterSpacing: '-0.5px' }}>
-                Hey, Bryan.
+                Hey there.
               </div>
               <div style={{ fontSize: 15, color: '#8B8B8B', marginTop: 4 }}>
-                What do you need?
+                What can I help you with?
               </div>
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
@@ -346,7 +345,6 @@ Respond as Samantha (do not include the "Samantha:" prefix in your reply):`
         )}
       </div>
 
-      {/* Input */}
       <div
         style={{
           background: '#fff',
