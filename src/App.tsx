@@ -12,29 +12,28 @@ import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Progress } from '@/components/ui/progress'
 import { AgentChat } from '@/components/AgentChat'
-import { TeamManagement } from '@/components/TeamManagement'
 import { HRDashboard } from '@/components/HRDashboard'
 import { DeploymentChecklist } from '@/components/DeploymentChecklist'
+import { 
 import { 
   Users, 
   ChartBar, 
   CurrencyDollar, 
-  CheckCircle, 
   WarningCircle,
   Brain,
   TrendUp,
   ListChecks,
   ChatCircleText,
+  ChatCircleText,
   UsersThree,
   Rocket,
   UserCircle
-} from '@phosphor-icons/react'
 
 function App() {
   const [agents, setAgents] = useKV<Agent[]>('office-agents', [])
+  const [agents, setAgents] = useKV<Agent[]>('office-agents', [])
   const [projects, setProjects] = useKV<Project[]>('office-projects', [])
-  const [tasks] = useKV<Task[]>('office-tasks', [])
-  const [teams, setTeams] = useKV<Team[]>('office-teams', [])
+  const [tasks] = useKV<Task[]>('office-tasks', []))
   const [duplicatesPrevented] = useKV<number>('duplicates-prevented', 0)
   const [totalTokensSaved] = useKV<number>('total-tokens-saved', 0)
   const [selectedProject, setSelectedProject] = useState<string | undefined>()
