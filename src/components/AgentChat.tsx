@@ -169,7 +169,7 @@ Provide 2-3 sentences of strategic guidance focusing on optimization, risk mitig
       const prompt = spark.llmPrompt`As the Chief Operating Officer, analyze operational efficiency for this project:
 
 Project: ${project.name}
-Current Cost: $${project.actualCost.toLocaleString()} / $${project.budget.toLocaleString()}
+Current Cost: ${project.actualCost.toLocaleString()} / ${project.budget.toLocaleString()}
 Team: ${project.assignedAgents.length} agents
 Efficiency: ${project.metrics.teamEfficiency}%
 Status: ${project.status}

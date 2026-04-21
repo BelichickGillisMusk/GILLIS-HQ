@@ -22,4 +22,7 @@ export default defineConfig({
       '@': resolve(projectRoot, 'src')
     }
   },
+  build: {
+    cssMinify: false,
+  },
 });
