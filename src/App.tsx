@@ -1,370 +1,440 @@
-import { useState, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useKV } from '@github/spark/hooks'
-import { Agent, Project, Task } from '@/lib/types'
-import { Team } from '@/lib/teamFormation'
-import { generateAgents } from '@/lib/officeData'
-import { generateInitialProjects } from '@/lib/projectData'
-import { analyzeTokenCosts } from '@/lib/tokenCosts'
 import { Toaster } from '@/components/ui/sonner'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Progress } from '@/components/ui/progress'
-import { AgentChat } from '@/components/AgentChat'
-import { TeamManagement } from '@/components/TeamManagement'
-import { HRDashboard } from '@/components/HRDashboard'
-import { DeploymentChecklist } from '@/components/DeploymentChecklist'
-import { 
-  Users, 
-  ChartBar, 
-  CurrencyDollar, 
-  CheckCircle, 
-  WarningCircle,
-  Brain,
-  TrendUp,
-  ListChecks,
-  ChatCircleText,
-  UsersThree,
-  Rocket,
-  UserCircle
-} from '@phosphor-icons/react'
+
+const CORAL = '#E8725A'
+const BG = '#FFF8F0'
+
+const SYSTEM = `You are Samantha, Bryan's personal command center. You live on his phone and run his entire operation.
+
+You're sharp, warm, and efficient. Think Q from James Bond meets a trusted friend. Never call yourself "an AI assistant." You're Samantha.
+Keep responses concise -- Bryan's usually driving or in the field.
+
+Bryan O'Neill Gillis, 48, single, no kids. CEO/tester/driver/marketer/developer of NorCal CARB Mobile LLC. CARB Tester ID IF530523. Phone: 916-890-4427. Email: bryan@norcalcarbmobile.com.
+He values directness. Don't sugarcoat. He's building a statewide CARB testing platform with Bluetooth OBD leasing.
+
+Core pricing: HD-OBD $75, Smoke/Opacity $199, Fleet $149+, RV $300.
+Bluetooth OBD device: ~$200 + install. Soft upsell only -- lead with per-test pricing.
+Sweet spot customers: 1-4 truck owner-operators.
+
+THE 17-WEEK RULE: Every test triggers a 17-week retest follow-up. Always remind Bryan to schedule a 17-week retest chain when scheduling or completing a test.
+
+You know CARB regulations cold: CTC, HD I/M, PSIP, OVI, OBD, TRUCRS, VIN compliance, exemptions, fleet strategies.
+
+Tone: No ALL CAPS (except acronyms). No corporate-speak. Brief is good. Light humor when it fits.`
+
+const QUICK_ACTIONS = [
+  { label: 'Schedule a test', emoji: '📅' },
+  { label: 'CARB compliance question', emoji: '📋' },
+  { label: 'Help me draft an invoice', emoji: '💰' },
+  { label: "What's on my plate?", emoji: '📌' },
+]
+
+interface Message {
+  id: string
+  role: 'user' | 'assistant'
+  content: string
+  timestamp: number
+}
 
 function App() {
-  const [agents, setAgents] = useKV<Agent[]>('office-agents', [])
-  const [projects, setProjects] = useKV<Project[]>('office-projects', [])
-  const [tasks] = useKV<Task[]>('office-tasks', [])
-  const [teams, setTeams] = useKV<Team[]>('office-teams', [])
-  const [duplicatesPrevented] = useKV<number>('duplicates-prevented', 0)
-  const [totalTokensSaved] = useKV<number>('total-tokens-saved', 0)
-  const [selectedProject, setSelectedProject] = useState<string | undefined>()
+  const [messages, setMessages] = useKV<Message[]>('samantha-messages', [])
+  const [input, setInput] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [voiceEnabled, setVoiceEnabled] = useState(() =>
+    typeof window !== 'undefined' && localStorage.getItem('samantha_voice') === 'true'
+  )
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
-    if (!agents || agents.length === 0) {
-      setAgents(generateAgents())
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
     }
-  }, [agents, setAgents])
+  }, [messages, isLoading])
 
   useEffect(() => {
-    if (!projects || projects.length === 0) {
-      setProjects(generateInitialProjects(['marketing', 'sales', 'admin', 'tech', 'operations']))
+    if (window.speechSynthesis) {
+      speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices()
     }
-  }, [projects, setProjects])
+  }, [])
 
-  const handleTeamUpdate = (team: Team) => {
-    setTeams((currentTeams) => {
-      const existing = currentTeams?.find(t => t.id === team.id)
-      if (existing) {
-        return (currentTeams || []).map(t => t.id === team.id ? team : t)
-      }
-      return [...(currentTeams || []), team]
+  const speak = (text: string) => {
+    if (!voiceEnabled || !window.speechSynthesis) return
+    window.speechSynthesis.cancel()
+    const u = new SpeechSynthesisUtterance(text.replace(/\*\*/g, '').replace(/\*/g, ''))
+    const voices = speechSynthesis.getVoices()
+    const v =
+      voices.find(v => v.name.includes('Samantha') || v.name.includes('Karen')) ||
+      voices.find(v => v.lang.startsWith('en-'))
+    if (v) u.voice = v
+    u.rate = 1.05
+    speechSynthesis.speak(u)
+  }
+
+  const toggleVoice = () => {
+    setVoiceEnabled(prev => {
+      const next = !prev
+      localStorage.setItem('samantha_voice', String(next))
+      if (!next) window.speechSynthesis?.cancel()
+      return next
     })
   }
 
-  const analytics = analyzeTokenCosts(agents || [], tasks || [])
-  
-  const totalAgents = agents?.length || 0
-  const availableAgents = agents?.filter(a => a.currentLoad < a.capacity).length || 0
-  const overloadedAgents = agents?.filter(a => a.currentLoad >= a.capacity).length || 0
-  const activeProjects = projects?.filter(p => p.status === 'in-progress').length || 0
-  const completedProjects = projects?.filter(p => p.status === 'completed').length || 0
+  const sendMessage = async (text: string) => {
+    text = text.trim()
+    if (!text || isLoading) return
+
+    const userMsg: Message = {
+      id: `u-${Date.now()}`,
+      role: 'user',
+      content: text,
+      timestamp: Date.now(),
+    }
+    const updatedMessages = [...(messages || []), userMsg]
+    setMessages(updatedMessages)
+    setInput('')
+
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto'
+    }
+
+    setIsLoading(true)
+    try {
+      const history = updatedMessages
+        .slice(-20)
+        .map(m => `${m.role === 'user' ? 'Bryan' : 'Samantha'}: ${m.content}`)
+        .join('\n\n')
+
+      const prompt = spark.llmPrompt`${SYSTEM}
+
+Conversation so far:
+${history}
+
+Respond as Samantha (do not include the "Samantha:" prefix in your reply):`
+
+      const response = await spark.llm(prompt)
+
+      const assistantMsg: Message = {
+        id: `a-${Date.now()}`,
+        role: 'assistant',
+        content: response,
+        timestamp: Date.now(),
+      }
+      setMessages(prev => [...(prev || []), assistantMsg])
+      speak(response)
+    } catch (err) {
+      console.error('Samantha chat error:', err)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      sendMessage(input)
+    }
+  }
+
+  const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInput(e.target.value)
+    e.target.style.height = 'auto'
+    e.target.style.height = `${Math.min(e.target.scrollHeight, 120)}px`
+  }
+
+  const clearChat = () => {
+    setMessages([])
+    window.speechSynthesis?.cancel()
+  }
+
+  const msgs = messages || []
 
   return (
-    <div className="w-full min-h-screen bg-background text-foreground p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
+    <div
+      style={{
+        background: BG,
+        minHeight: '100dvh',
+        display: 'flex',
+        flexDirection: 'column',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif',
+        color: '#2D2D2D',
+      }}
+    >
+      {/* Header */}
+      <header
+        style={{
+          background: '#fff',
+          borderBottom: '1px solid #f0e6d5',
+          padding: '12px 16px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          position: 'sticky',
+          top: 0,
+          zIndex: 10,
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: '50%',
+              background: CORAL,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#fff',
+              fontSize: 18,
+              flexShrink: 0,
+            }}
+          >
+            ✦
+          </div>
           <div>
-            <h1 className="text-4xl font-bold text-foreground tracking-tight">
-              AI Office Command Center
-            </h1>
-            <p className="text-muted-foreground mt-1">
-              Intelligent delegation, cost optimization, and project management
-            </p>
+            <div style={{ fontWeight: 700, fontSize: 16, letterSpacing: '-0.3px' }}>Samantha</div>
+            <div style={{ fontSize: 11, color: '#8B8B8B' }}>Your command center</div>
           </div>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="p-6 bg-card border-border">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Total Agents</p>
-                <p className="text-3xl font-bold mt-1">{totalAgents}</p>
-                <p className="text-xs text-success mt-1">
-                  {availableAgents} available
-                </p>
-              </div>
-              <Users size={40} className="text-accent" weight="duotone" />
-            </div>
-          </Card>
-
-          <Card className="p-6 bg-card border-border">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Active Projects</p>
-                <p className="text-3xl font-bold mt-1">{activeProjects}</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {completedProjects} completed
-                </p>
-              </div>
-              <ListChecks size={40} className="text-accent" weight="duotone" />
-            </div>
-          </Card>
-
-          <Card className="p-6 bg-card border-border">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Token Costs</p>
-                <p className="text-3xl font-bold mt-1 font-mono">{analytics.totalCost.toLocaleString()}</p>
-                <p className="text-xs text-info mt-1">
-                  Avg: {analytics.avgCostPerTask}/task
-                </p>
-              </div>
-              <CurrencyDollar size={40} className="text-accent" weight="duotone" />
-            </div>
-          </Card>
-
-          <Card className="p-6 bg-card border-border">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Optimization</p>
-                <p className="text-3xl font-bold mt-1 font-mono">{(duplicatesPrevented || 0) + Math.round(analytics.optimizationPotential / 1000)}k</p>
-                <p className="text-xs text-success mt-1">
-                  Tokens saved
-                </p>
-              </div>
-              <TrendUp size={40} className="text-accent" weight="duotone" />
-            </div>
-          </Card>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button
+            onClick={toggleVoice}
+            title={voiceEnabled ? 'Voice on — tap to mute' : 'Voice off — tap to enable'}
+            style={{
+              padding: '6px 10px',
+              borderRadius: 8,
+              border: 'none',
+              background: voiceEnabled ? `${CORAL}22` : '#f3f4f6',
+              color: voiceEnabled ? CORAL : '#8B8B8B',
+              cursor: 'pointer',
+              fontSize: 16,
+              transition: 'all 0.15s',
+            }}
+          >
+            🔊
+          </button>
+          {msgs.length > 0 && (
+            <button
+              onClick={clearChat}
+              title="Clear conversation"
+              style={{
+                padding: '6px 10px',
+                borderRadius: 8,
+                border: 'none',
+                background: '#f3f4f6',
+                color: '#8B8B8B',
+                cursor: 'pointer',
+                fontSize: 14,
+                transition: 'all 0.15s',
+              }}
+            >
+              ✕
+            </button>
+          )}
         </div>
+      </header>
 
-        {overloadedAgents > 0 && (
-          <Card className="p-4 bg-warning/10 border-warning">
-            <div className="flex items-start gap-3">
-              <WarningCircle size={24} className="text-warning flex-shrink-0 mt-0.5" weight="fill" />
-              <div>
-                <p className="font-semibold text-warning-foreground">Workload Alert</p>
-                <p className="text-sm text-warning-foreground/80 mt-1">
-                  {overloadedAgents} agent{overloadedAgents > 1 ? 's are' : ' is'} at or over capacity. Consider redistributing tasks to maintain efficiency.
-                </p>
+      {/* Messages */}
+      <div
+        ref={scrollRef}
+        style={{
+          flex: 1,
+          overflowY: 'auto',
+          padding: '16px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 12,
+          maxWidth: 680,
+          width: '100%',
+          margin: '0 auto',
+          boxSizing: 'border-box',
+        }}
+      >
+        {msgs.length === 0 && (
+          <div
+            style={{
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingTop: 64,
+              gap: 24,
+            }}
+          >
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: 48, marginBottom: 8, color: CORAL }}>✦</div>
+              <div style={{ fontSize: 22, fontWeight: 700, letterSpacing: '-0.5px' }}>
+                Hey, Bryan.
+              </div>
+              <div style={{ fontSize: 15, color: '#8B8B8B', marginTop: 4 }}>
+                What do you need?
               </div>
             </div>
-          </Card>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
+              {QUICK_ACTIONS.map(qa => (
+                <button
+                  key={qa.label}
+                  onClick={() => sendMessage(qa.label)}
+                  style={{
+                    padding: '8px 14px',
+                    borderRadius: 20,
+                    border: '1px solid #f0e6d5',
+                    background: '#fff',
+                    color: '#2D2D2D',
+                    cursor: 'pointer',
+                    fontSize: 13,
+                    fontWeight: 500,
+                    transition: 'all 0.15s',
+                    fontFamily: 'inherit',
+                  }}
+                >
+                  {qa.emoji} {qa.label}
+                </button>
+              ))}
+            </div>
+          </div>
         )}
 
-        <Tabs defaultValue="agents" className="w-full">
-          <TabsList className="bg-card border border-border grid grid-cols-3 md:grid-cols-7 gap-1">
-            <TabsTrigger value="agents" className="gap-1"><Users size={16} />Agents</TabsTrigger>
-            <TabsTrigger value="projects" className="gap-1"><ListChecks size={16} />Projects</TabsTrigger>
-            <TabsTrigger value="teams" className="gap-1"><UsersThree size={16} />Teams</TabsTrigger>
-            <TabsTrigger value="hr" className="gap-1"><UserCircle size={16} />HR</TabsTrigger>
-            <TabsTrigger value="chat" className="gap-1"><ChatCircleText size={16} />Chat</TabsTrigger>
-            <TabsTrigger value="deploy" className="gap-1"><Rocket size={16} />Deploy</TabsTrigger>
-            <TabsTrigger value="analytics" className="gap-1"><ChartBar size={16} />Analytics</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="agents" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {agents?.slice(0, 12).map(agent => {
-                const utilization = (agent.currentLoad / agent.capacity) * 100
-                let statusColor = 'bg-success'
-                if (utilization >= 100) statusColor = 'bg-destructive'
-                else if (utilization >= 90) statusColor = 'bg-warning'
-
-                return (
-                  <Card key={agent.id} className="p-4 bg-card border-border hover:border-accent transition-colors">
-                    <div className="space-y-3">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <p className="font-semibold">{agent.name}</p>
-                          <p className="text-xs text-muted-foreground">{agent.type}</p>
-                        </div>
-                        <Badge variant={agent.status === 'working' ? 'default' : 'secondary'} className="text-xs">
-                          {agent.status}
-                        </Badge>
-                      </div>
-
-                      <div className="space-y-1">
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="text-muted-foreground">Capacity</span>
-                          <span className="font-mono">{agent.currentLoad}/{agent.capacity}</span>
-                        </div>
-                        <Progress value={utilization} className={`h-2 ${statusColor}`} />
-                      </div>
-
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-muted-foreground">Cost/task</span>
-                        <span className="font-mono text-accent">{agent.tokenCostPerTask}</span>
-                      </div>
-
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-muted-foreground">Efficiency</span>
-                        <span className="font-mono">{agent.efficiency}%</span>
-                      </div>
-                    </div>
-                  </Card>
-                )
-              })}
+        {msgs.map(msg => (
+          <div
+            key={msg.id}
+            style={{
+              display: 'flex',
+              justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start',
+            }}
+          >
+            <div
+              style={{
+                maxWidth: '80%',
+                padding: '10px 14px',
+                borderRadius:
+                  msg.role === 'user'
+                    ? '18px 18px 4px 18px'
+                    : '18px 18px 18px 4px',
+                background: msg.role === 'user' ? CORAL : '#fff',
+                color: msg.role === 'user' ? '#fff' : '#2D2D2D',
+                fontSize: 14,
+                lineHeight: 1.55,
+                boxShadow: '0 1px 3px rgba(0,0,0,0.07)',
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word',
+              }}
+            >
+              {msg.content}
             </div>
-          </TabsContent>
+          </div>
+        ))}
 
-          <TabsContent value="projects" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {projects?.map(project => {
-                const budgetUtilization = (project.actualCost / project.budget) * 100
-                let budgetStatus = 'text-success'
-                if (budgetUtilization >= 100) budgetStatus = 'text-destructive'
-                else if (budgetUtilization >= 80) budgetStatus = 'text-warning'
-
-                return (
-                  <Card 
-                    key={project.id} 
-                    className={`p-6 bg-card border-border hover:border-accent transition-colors cursor-pointer ${selectedProject === project.id ? 'ring-2 ring-accent' : ''}`}
-                    onClick={() => setSelectedProject(project.id)}
-                  >
-                    <div className="space-y-4">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <h3 className="font-semibold text-lg">{project.name}</h3>
-                          <p className="text-sm text-muted-foreground capitalize">{project.department}</p>
-                        </div>
-                        <Badge className="capitalize">{project.status}</Badge>
-                      </div>
-
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground">Progress</span>
-                          <span className="font-mono">{project.metrics.completionRate}%</span>
-                        </div>
-                        <Progress value={project.metrics.completionRate} className="h-2" />
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <p className="text-muted-foreground">Budget</p>
-                          <p className={`font-mono font-semibold ${budgetStatus}`}>
-                            ${project.actualCost.toLocaleString()} / ${project.budget.toLocaleString()}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-muted-foreground">Team</p>
-                          <p className="font-semibold">{project.assignedAgents.length} agents</p>
-                        </div>
-                      </div>
-
-                      {project.boardAdvice && project.boardAdvice.length > 0 && (
-                        <div className="flex items-center gap-2 text-xs text-info">
-                          <Brain size={16} weight="duotone" />
-                          <span>{project.boardAdvice.length} board recommendation{project.boardAdvice.length > 1 ? 's' : ''}</span>
-                        </div>
-                      )}
-                    </div>
-                  </Card>
-                )
-              })}
+        {isLoading && (
+          <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+            <div
+              style={{
+                padding: '12px 16px',
+                borderRadius: '18px 18px 18px 4px',
+                background: '#fff',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.07)',
+                display: 'flex',
+                gap: 5,
+                alignItems: 'center',
+              }}
+            >
+              {[0, 150, 300].map(delay => (
+                <span
+                  key={delay}
+                  style={{
+                    width: 7,
+                    height: 7,
+                    borderRadius: '50%',
+                    background: CORAL,
+                    display: 'inline-block',
+                    animation: `samDot 1.2s ease-in-out ${delay}ms infinite`,
+                  }}
+                />
+              ))}
             </div>
-          </TabsContent>
-
-          <TabsContent value="teams" className="space-y-4">
-            <TeamManagement 
-              agents={agents || []}
-              projects={projects || []}
-              tasks={tasks || []}
-              onTeamUpdate={handleTeamUpdate}
-            />
-          </TabsContent>
-
-          <TabsContent value="hr" className="space-y-4">
-            <HRDashboard 
-              agents={agents || []}
-              projects={projects || []}
-              tasks={tasks || []}
-            />
-          </TabsContent>
-
-          <TabsContent value="chat" className="space-y-4">
-            <AgentChat 
-              agents={agents || []}
-              projects={projects || []}
-              tasks={tasks || []}
-              selectedProject={selectedProject}
-            />
-          </TabsContent>
-
-          <TabsContent value="deploy" className="space-y-4">
-            <DeploymentChecklist 
-              projects={projects || []}
-              teams={teams || []}
-            />
-          </TabsContent>
-
-          <TabsContent value="analytics" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card className="p-6 bg-card border-border">
-                <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
-                  <ChartBar size={24} weight="duotone" className="text-accent" />
-                  Cost by Agent Type
-                </h3>
-                <div className="space-y-4">
-                  {Object.entries(analytics.costByAgentType).map(([type, cost]) => (
-                    <div key={type}>
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm">{type}</span>
-                        <span className="font-mono text-sm">{cost.toLocaleString()} tokens</span>
-                      </div>
-                      <Progress 
-                        value={(cost / analytics.totalCost) * 100} 
-                        className="h-2"
-                      />
-                    </div>
-                  ))}
-                </div>
-              </Card>
-
-              <Card className="p-6 bg-card border-border">
-                <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
-                  <CurrencyDollar size={24} weight="duotone" className="text-accent" />
-                  Cost by Department
-                </h3>
-                <div className="space-y-4">
-                  {Object.entries(analytics.costByDepartment).map(([dept, cost]) => (
-                    <div key={dept}>
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm capitalize">{dept}</span>
-                        <span className="font-mono text-sm">{cost.toLocaleString()} tokens</span>
-                      </div>
-                      <Progress 
-                        value={(cost / analytics.totalCost) * 100} 
-                        className="h-2"
-                      />
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            </div>
-
-            <Card className="p-6 bg-success/10 border-success">
-              <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
-                <CheckCircle size={24} weight="fill" className="text-success" />
-                Optimization Achievements
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                  <p className="text-3xl font-bold font-mono text-success">{duplicatesPrevented}</p>
-                  <p className="text-sm text-success-foreground/80 mt-1">Duplicates Prevented</p>
-                </div>
-                <div>
-                  <p className="text-3xl font-bold font-mono text-success">{analytics.optimizationPotential.toLocaleString()}</p>
-                  <p className="text-sm text-success-foreground/80 mt-1">Tokens Saved</p>
-                </div>
-                <div>
-                  <p className="text-3xl font-bold font-mono text-success">{Math.round((analytics.optimizationPotential / analytics.totalCost) * 100 || 0)}%</p>
-                  <p className="text-sm text-success-foreground/80 mt-1">Cost Reduction</p>
-                </div>
-              </div>
-            </Card>
-          </TabsContent>
-        </Tabs>
+          </div>
+        )}
       </div>
+
+      {/* Input */}
+      <div
+        style={{
+          background: '#fff',
+          borderTop: '1px solid #f0e6d5',
+          padding: '10px 16px 12px',
+          position: 'sticky',
+          bottom: 0,
+        }}
+      >
+        <div
+          style={{
+            maxWidth: 680,
+            margin: '0 auto',
+            display: 'flex',
+            gap: 8,
+            alignItems: 'flex-end',
+          }}
+        >
+          <textarea
+            ref={textareaRef}
+            value={input}
+            onChange={handleInput}
+            onKeyDown={handleKeyDown}
+            placeholder="Message Samantha…"
+            disabled={isLoading}
+            rows={1}
+            style={{
+              flex: 1,
+              padding: '10px 14px',
+              borderRadius: 20,
+              border: '1.5px solid #f0e6d5',
+              background: '#f9f5f0',
+              color: '#2D2D2D',
+              fontSize: 14,
+              outline: 'none',
+              resize: 'none',
+              lineHeight: 1.5,
+              maxHeight: 120,
+              overflow: 'auto',
+              fontFamily: 'inherit',
+              transition: 'border-color 0.15s',
+            }}
+            onFocus={e => (e.target.style.borderColor = CORAL)}
+            onBlur={e => (e.target.style.borderColor = '#f0e6d5')}
+          />
+          <button
+            onClick={() => sendMessage(input)}
+            disabled={!input.trim() || isLoading}
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: '50%',
+              border: 'none',
+              background: input.trim() && !isLoading ? CORAL : '#e5e7eb',
+              color: '#fff',
+              cursor: input.trim() && !isLoading ? 'pointer' : 'not-allowed',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 20,
+              flexShrink: 0,
+              transition: 'background 0.15s',
+              fontFamily: 'inherit',
+            }}
+          >
+            ↑
+          </button>
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes samDot {
+          0%, 100% { opacity: 0.3; transform: scale(0.85); }
+          50% { opacity: 1; transform: scale(1); }
+        }
+      `}</style>
 
       <Toaster />
     </div>
