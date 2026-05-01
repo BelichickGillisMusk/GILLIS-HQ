@@ -39,6 +39,7 @@ const SITE = {
     'Employment Law',
     'Estate Planning',
   ],
+  foundedYear: 2011,                   // ← update to the actual year the firm was founded
   socialProof: {
     years: '15+',
     cases: '500+',
@@ -570,7 +571,7 @@ function homePage() {
     body: `
       <section class="hero">
         <div class="hero-content">
-          <span class="hero-eyebrow">Serving ${SITE.address.state} Since ${new Date().getFullYear() - parseInt(SITE.socialProof.years)}</span>
+          <span class="hero-eyebrow">Serving ${SITE.address.state} Since ${SITE.foundedYear}</span>
           <h1>${SITE.tagline}</h1>
           <p>Whether you're protecting your business, planning your estate, or resolving a dispute — we bring clarity and strategy to every matter.</p>
           <div class="btn-group">
