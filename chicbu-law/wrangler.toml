@@ -1,0 +1,22 @@
+name = "chicbu-law"
+main = "worker.js"
+compatibility_date = "2026-03-01"
+account_id = "bafa242dd95d3fdce72540d20accd0a2"
+
+# ─── DOMAIN CONFIGURATION ────────────────────────────────────────────────────
+# Replace chicbulaw.com with the actual domain once confirmed.
+# The domain must already be added to your Cloudflare account (orange-cloud DNS).
+# Wrangler will auto-create DNS records and provision SSL on first deploy.
+routes = [
+  { pattern = "chicbulaw.com",     custom_domain = true },
+  { pattern = "www.chicbulaw.com", custom_domain = true }
+]
+
+# ─── OPTIONAL: KV NAMESPACE FOR DYNAMIC BLOG POSTS ───────────────────────────
+# If you want to add blog posts without redeploying, create a KV namespace and
+# uncomment the lines below. Posts in BLOG_POSTS inside worker.js always work
+# as a fallback — KV is optional.
+#
+# [[kv_namespaces]]
+# binding = "BLOG_KV"
+# id      = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
