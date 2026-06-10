@@ -20,10 +20,30 @@ A React + TypeScript + Vite application: an intelligent AI office management sys
 ## Development
 
 ```bash
-npm install
-npm run dev      # local dev server
+npm install --legacy-peer-deps
+npm run dev      # local dev server (port 5000)
 npm run build    # production build
 ```
+
+### GitHub Spark auth (`GITHUB_TOKEN`)
+
+Samantha chat and `useKV` persistence call GitHub Spark proxies during `npm run dev`. Without a token, the UI loads but LLM/KV requests return **401**.
+
+**Local setup**
+
+1. Copy `.env.example` → `.env.local`
+2. Set `GITHUB_TOKEN` to a PAT with Spark runtime + GitHub Models access
+3. Run `npm run dev` — Vite loads `.env.local` automatically
+
+**Cursor Cloud agents**
+
+Add a secret named exactly **`GITHUB_TOKEN`** in the agent environment (not a custom name like `Samantha`). The Spark Vite plugin only reads `GITHUB_TOKEN`.
+
+**GitHub repository (Actions / shared dev)**
+
+Repo admins: **Settings → Secrets and variables → Actions → New repository secret** → name `GITHUB_TOKEN`, paste the same PAT. Use it in workflows with `${{ secrets.GITHUB_TOKEN }}` or expose to Codespaces if your org supports that.
+
+Do **not** commit tokens to this repo. `.env` and `.env.local` are gitignored.
 
 ---
 
