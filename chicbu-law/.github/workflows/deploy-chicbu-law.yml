@@ -1,0 +1,22 @@
+name: Deploy Chicbu Law to Cloudflare
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**'          # triggers on any push when this is the only project in the repo
+  workflow_dispatch:  # allow manual deploys from the GitHub Actions tab
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy chicbu-law worker
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: bafa242dd95d3fdce72540d20accd0a2
+          command: deploy
