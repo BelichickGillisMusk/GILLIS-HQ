@@ -22,14 +22,15 @@ The app depends on GitHub Spark proxies during development:
 - `/_spark/llm` — powers `spark.llm()` (Samantha chat, agent features)
 - `/_spark/kv` — powers `useKV()` persistence (`spark.meta.json` sets `"dbType": "kv"`)
 
-Set **`GITHUB_TOKEN`** in the shell before starting the dev server for full chat and persistence:
+For full chat and persistence, provide **`GITHUB_TOKEN`** using any of:
 
-```bash
-export GITHUB_TOKEN="<token-with-spark-runtime-and-models-access>"
-npm run dev
-```
+1. **`.env.local`** (recommended locally) — copy `.env.example`, set `GITHUB_TOKEN=...`; Vite loads it on `npm run dev`
+2. **Shell export** — `export GITHUB_TOKEN=...` before `npm run dev`
+3. **Cursor Cloud secret** — must be named exactly `GITHUB_TOKEN` (custom secret names are not read by the Spark plugin)
 
 Without it, the UI still loads and accepts messages, but LLM replies and KV writes return **401 Unauthorized**.
+
+The `gh` CLI session token (`ghs_*`) does **not** work for Spark runtime — use a PAT with Spark + Models access.
 
 ### Install
 
