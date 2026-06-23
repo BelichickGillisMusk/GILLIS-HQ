@@ -900,6 +900,19 @@ Sitemap: https://${SITE.domain}/sitemap.xml
 `;
 }
 
+// ─── SECURITY HEADERS ────────────────────────────────────────────────────────
+const SECURITY_HEADERS = {
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+  'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'; img-src 'self'; font-src 'self'; base-uri 'self'; form-action 'self'",
+};
+
+function htmlHeaders(cacheControl) {
+  return { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': cacheControl, ...SECURITY_HEADERS };
+}
+
 // ─── ROUTER ─────────────────────────────────────────────────────────────────
 export default {
   async fetch(request) {
@@ -908,25 +921,25 @@ export default {
 
     if (path === '/robots.txt') {
       return new Response(robotsTxt(), {
-        headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'public, max-age=86400' },
+        headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'public, max-age=86400', 'X-Content-Type-Options': 'nosniff' },
       });
     }
 
     if (path === '/sitemap.xml') {
       return new Response(sitemapXml(), {
-        headers: { 'Content-Type': 'application/xml; charset=utf-8', 'Cache-Control': 'public, max-age=3600' },
+        headers: { 'Content-Type': 'application/xml; charset=utf-8', 'Cache-Control': 'public, max-age=3600', 'X-Content-Type-Options': 'nosniff' },
       });
     }
 
     if (path === '/') {
       return new Response(homePage(), {
-        headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'public, max-age=300' },
+        headers: htmlHeaders('public, max-age=300'),
       });
     }
 
     if (path === '/blog') {
       return new Response(blogIndexPage(), {
-        headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'public, max-age=300' },
+        headers: htmlHeaders('public, max-age=300'),
       });
     }
 
@@ -935,14 +948,14 @@ export default {
       const post = BLOG_POSTS.find((p) => p.slug === blogMatch[1]);
       if (post) {
         return new Response(blogPostPage(post), {
-          headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'public, max-age=300' },
+          headers: htmlHeaders('public, max-age=300'),
         });
       }
     }
 
     return new Response(notFoundPage(), {
       status: 404,
-      headers: { 'Content-Type': 'text/html; charset=utf-8' },
+      headers: htmlHeaders('no-cache'),
     });
   },
 };
