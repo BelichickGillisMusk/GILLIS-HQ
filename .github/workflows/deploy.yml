@@ -13,7 +13,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm ci
+      - run: npm install --legacy-peer-deps
       - run: npm run build
       - name: Disable worker-route wrangler.toml for Pages deploy
         run: |
@@ -24,4 +24,4 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: bafa242dd95d3fdce72540d20accd0a2
-          command: pages deploy dist --project-name=gillisinstituteofai
+          command: pages deploy dist --project-name=gillisinstituteofai --branch=production
