@@ -10,6 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Require Cloudflare API token
+        run: |
+          if [ -z "${{ secrets.CLOUDFLARE_API_TOKEN }}" ]; then
+            echo "::error::CLOUDFLARE_API_TOKEN is not available to this repository."
+            echo "Grant repo access at: https://github.com/organizations/BelichickGillisMusk/settings/secrets/actions"
+            exit 1
+          fi
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -20,8 +27,7 @@ jobs:
           if [ -f wrangler.toml ] && grep -qE '^\[\[routes\]\]|^routes\s*=' wrangler.toml; then
             mv wrangler.toml wrangler.toml.worker-routes-disabled
           fi
-      - uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: bafa242dd95d3fdce72540d20accd0a2
-          command: pages deploy dist --project-name=gillisinstituteofai --branch=production
+      - name: Deploy to Cloudflare Pages
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: npx wrangler@3.90.0 pages deploy dist --project-name=gillisinstituteofai --branch=production
